@@ -1,0 +1,102 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/api/ucp/mcp
+status: published
+note: >-
+  Rhone runs its store on Shopify, and the Shopify platform exposes a Universal Commerce Protocol
+  (UCP) MCP endpoint per merchant. The endpoint below is Rhone's own store instance - it serves
+  Rhone's catalog, carts, checkouts and orders - and Rhone's own /llms.txt, /agents.md and
+  /robots.txt all name it as the sanctioned way for agents to transact. It is platform-provided,
+  not merchant-authored; recorded as a real agent surface Rhone serves, with that provenance stated.
+  tools/list is anonymous and returned 13 tools with full JSON Schema inputSchemas (saved verbatim
+  to rhone-apparel-mcp-tools.json). tools/call additionally requires a resolvable UCP agent profile
+  URI in params.meta['ucp-agent'].profile; without one the server returns JSON-RPC -32001
+  / data.code invalid_profile_url over HTTP 422.
+deployment:
+  mode: remote
+  endpoint: https://rhone.myshopify.com/api/ucp/mcp
+  auth: none
+  verified: probed
+  note: >-
+    Rhone's llms.txt and robots.txt advertise the endpoint at
+    https://checkout.rhone.com/api/ucp/mcp. That brand host sits behind a Cloudflare managed
+    challenge and returned 403 to every probe, so the reachable, verified endpoint is the
+    equivalent path on the Shopify shop host recorded above.
+server:
+  name: rhone-ucp
+  transport: http
+  protocol: MCP over JSON-RPC 2.0
+  url: https://rhone.myshopify.com/api/ucp/mcp
+  advertised_url: https://checkout.rhone.com/api/ucp/mcp
+  api_version: '2026-04-08'
+  api_version_header: x-shopify-ucp-mcp-api-version
+  standard: Universal Commerce Protocol (UCP)
+  standard_versions: ['2026-04-08', '2026-01-23']
+  discovery: https://rhone.myshopify.com/.well-known/ucp
+  schema: https://ucp.dev/2026-04-08/services/shopping/mcp.openrpc.json
+tool_count: 13
+tools:
+  - name: get_checkout
+    description: "Returns details about the checkout, including line items, totals, and any applicable discounts or taxes."
+    input_properties: [id, meta]
+    required: [meta, id]
+  - name: create_checkout
+    description: "Creates a checkout. Returns checkout details, including line items, totals, and any applicable discounts or taxes."
+    input_properties: [checkout, meta]
+    required: [meta, checkout]
+  - name: update_checkout
+    description: "Updates a checkout. Returns checkout details, including line items, totals, and any applicable discounts or taxes."
+    input_properties: [checkout, id, meta]
+    required: [meta, checkout, id]
+  - name: complete_checkout
+    description: "Completes a checkout and returns the checkout result. Returns details about the completed checkout, including order ID, Thank You Page URL, or any errors encountered."
+    input_properties: [checkout, id, meta]
+    required: [meta, id, checkout]
+  - name: cancel_checkout
+    description: "Cancels a checkout."
+    input_properties: [id, meta]
+    required: [meta, id]
+  - name: get_cart
+    description: "Get the cart contents"
+    input_properties: [id, meta]
+    required: [meta, id]
+  - name: create_cart
+    description: "Creates a new cart"
+    input_properties: [cart, meta]
+    required: [meta, cart]
+  - name: update_cart
+    description: "Perform updates to a cart."
+    input_properties: [cart, id, meta]
+    required: [meta, cart, id]
+  - name: cancel_cart
+    description: "Cancels a cart."
+    input_properties: [id, meta]
+    required: [meta, id]
+  - name: get_order
+    description: "Get the details of an order"
+    input_properties: [id, meta]
+    required: [meta, id]
+  - name: search_catalog
+    description: "Search for products from the online store, hosted on Shopify."
+    input_properties: [catalog, meta]
+    required: [meta, catalog]
+  - name: lookup_catalog
+    description: "Look up multiple products or variants by identifier."
+    input_properties: [catalog, meta]
+    required: [meta, catalog]
+  - name: get_product
+    description: "Retrieve complete product detail by identifier. Returns a singular product"
+    input_properties: [catalog, meta]
+    required: [meta, catalog]
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      method: POST tools/list
+      status: 200
+      content_type: application/json
+      result: 13 tools with inputSchema
+    - url: https://checkout.rhone.com/api/ucp/mcp
+      method: GET
+      status: 403
+      note: Cloudflare managed challenge on the advertised brand host

@@ -1,0 +1,19 @@
+generated: '2026-08-26'
+method: searched
+source: https://rhone.myshopify.com/llms.txt
+plan_count: 0
+note: >-
+  Rhone is a direct-to-consumer apparel brand, not an API vendor. It sells garments, not API access,
+  and publishes no developer plans, tiers, quotas or metered pricing. The agent-facing UCP/MCP
+  endpoint is free to call and carries no commercial plan; the only prices Rhone publishes are
+  product prices in its catalog, returned by the MCP catalog tools in ISO 4217 minor units. An
+  honest zero, not a gap in the search.
+plans: []
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/llms.txt
+      status: 200
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 200
+      note: anonymous tools/list, no plan or key required

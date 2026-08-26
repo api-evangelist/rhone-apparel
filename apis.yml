@@ -1,23 +1,172 @@
 aid: rhone-apparel
 name: Rhone Apparel
-description: 'Rhone Apparel is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Rhone Apparel, Inc. is a direct-to-consumer men's premium performance apparel and activewear brand
+  founded in 2014 by brothers Nate and Ben Checketts and headquartered in Stamford, Connecticut. It
+  sells through its own storefront, wholesale partners including Nordstrom and Bloomingdale's, and
+  its own retail locations. Rhone runs no developer program and publishes no OpenAPI, SDK or API
+  documentation. It does, however, operate a real and reachable agent-commerce surface: its Shopify
+  storefront serves a store-specific llms.txt and agents.md, a Universal Commerce Protocol (UCP)
+  merchant profile at /.well-known/ucp, an anonymous MCP endpoint exposing 13 catalog, cart,
+  checkout and order tools with full JSON Schema inputSchemas, and Shopify Customer Accounts OIDC
+  discovery branded on account.rhone.com. The company is profiled here as an agent-commerce
+  participant rather than an API producer.
+image: https://rhone.myshopify.com/cdn/shop/files/Discount_auto_applied_1200x.png?v=1733928390
 url: https://raw.githubusercontent.com/api-evangelist/rhone-apparel/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
+- Apparel
+- Retail
+- E-Commerce
+- Direct to Consumer
+- Agent Commerce
+- Universal Commerce Protocol
+- MCP
+- Shopify
+- Activewear
 - Company
-apis: []
+apis:
+- name: Rhone UCP Commerce (MCP)
+  description: >-
+    Rhone's agent-facing commerce surface, implementing the Universal Commerce Protocol over MCP
+    (JSON-RPC 2.0). Thirteen tools cover catalog search and lookup, product detail, cart create /
+    update / cancel, checkout create / update / complete / cancel, and order read. tools/list is
+    anonymous and returns full JSON Schema inputSchemas; tools/call requires a resolvable UCP agent
+    profile URI, and complete_checkout additionally requires an idempotency key. Rhone's own
+    robots.txt and llms.txt state that payment must never be completed without contemporaneous
+    human approval. Platform-provided by Shopify, served from Rhone-controlled hosts and scoped to
+    Rhone's own catalog and orders.
+  humanURL: https://rhone.myshopify.com/llms.txt
+  baseURL: https://rhone.myshopify.com/api/ucp/mcp
+  tags:
+  - Commerce
+  - Agent Commerce
+  - MCP
+  - UCP
+  - Catalog
+  - Checkout
+  properties:
+  - type: MCPServer
+    url: mcp/rhone-apparel-mcp.yml
+  - type: Authentication
+    url: authentication/rhone-apparel-authentication.yml
+  - type: OAuthScopes
+    url: scopes/rhone-apparel-scopes.yml
+  - type: ErrorCatalog
+    url: errors/rhone-apparel-problem-types.yml
+  - type: Conventions
+    url: conventions/rhone-apparel-conventions.yml
+  - type: Idempotency
+    url: conventions/rhone-apparel-conventions.yml
+  - type: RateLimits
+    url: rate-limits/rhone-apparel-rate-limits.yml
+  - type: DataModel
+    url: data-model/rhone-apparel-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/rhone-apparel-lifecycle.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/rhone-apparel-domain-security.yml
 - type: Website
+  url: https://www.rhone.com/
+- type: Documentation
+  url: https://rhone.myshopify.com/agents.md
+- type: LLMsTxt
+  url: llms/rhone-apparel-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/rhone-apparel-well-known.yml
+- type: Conformance
+  url: conformance/rhone-apparel-conformance.yml
+- type: Plans
+  url: plans/rhone-apparel-plans-pricing.yml
+- type: Blog
+  url: https://www.rhone.com/blogs/pursuit
+- type: Support
+  url: https://www.rhone.com/pages/support/
+- type: TermsOfService
+  url: https://www.rhone.com/policies/terms-of-service
+- type: PrivacyPolicy
+  url: https://www.rhone.com/policies/privacy-policy
+- type: SignUp
+  url: https://www.rhone.com/account/login
+- type: SecondaryMarketListing
   url: https://www.hiive.com/securities/rhone-apparel-stock
+x-pointer-verification:
+  checked: '2026-08-26'
+  note: >-
+    www.rhone.com and checkout.rhone.com sit behind a Cloudflare managed challenge
+    (cf-mitigated: challenge) and return HTTP 403 to every non-browser client, including
+    /robots.txt. Per pipeline rules a bot challenge is not a dead pointer, so the brand-host
+    pointers were verified by fetching the identical path on Rhone's own reachable Shopify origin,
+    rhone.myshopify.com, which serves the same store and the same routes (canonical link on the
+    origin points at checkout.rhone.com).
+  pointers:
+  - url: https://www.rhone.com/
+    status: 403
+    verified_via: https://rhone.myshopify.com/ (200)
+    verdict: live-behind-bot-challenge
+  - url: https://www.rhone.com/blogs/pursuit
+    status: 403
+    verified_via: https://rhone.myshopify.com/blogs/pursuit (200)
+    verdict: live-behind-bot-challenge
+  - url: https://www.rhone.com/pages/support/
+    status: 403
+    verified_via: https://rhone.myshopify.com/pages/support (200)
+    verdict: live-behind-bot-challenge
+  - url: https://www.rhone.com/policies/terms-of-service
+    status: 403
+    verified_via: https://rhone.myshopify.com/policies/terms-of-service (200)
+    verdict: live-behind-bot-challenge
+  - url: https://www.rhone.com/policies/privacy-policy
+    status: 403
+    verified_via: https://rhone.myshopify.com/policies/privacy-policy (200)
+    verdict: live-behind-bot-challenge
+  - url: https://www.rhone.com/account/login
+    status: 403
+    verified_via: https://rhone.myshopify.com/account/login (200)
+    verdict: live-behind-bot-challenge
+  - url: https://rhone.myshopify.com/agents.md
+    status: 200
+    verdict: live
+  - url: https://www.hiive.com/securities/rhone-apparel-stock
+    status: 200
+    verdict: live
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 21
+  pass: local-v1
+x-coverage:
+  state: covered
+  reason: covered
+  detail: >-
+    Rhone publishes no developer program and no OpenAPI, but its Shopify storefront serves a real
+    agent surface - a store-specific llms.txt and agents.md, a UCP merchant profile at
+    /.well-known/ucp, an anonymous MCP endpoint returning 13 tools with full JSON Schema
+    inputSchemas, and Shopify Customer Accounts OIDC on account.rhone.com. The brand hosts
+    www.rhone.com and checkout.rhone.com are behind a Cloudflare managed challenge and 403 every
+    probe - including the /.well-known/ucp and /api/ucp/mcp paths Rhone's own robots.txt advertises
+    to agents - so the surface was verified on Rhone's reachable Shopify origin instead.
+  evidence:
+  - url: https://rhone.myshopify.com/api/ucp/mcp
+    status: 200
+  - url: https://rhone.myshopify.com/llms.txt
+    status: 200
+  - url: https://account.rhone.com/.well-known/oauth-protected-resource
+    status: 200
+  - url: https://checkout.rhone.com/.well-known/ucp
+    status: 403
+  - url: https://www.rhone.com/robots.txt
+    status: 403
+  checked: '2026-08-26'

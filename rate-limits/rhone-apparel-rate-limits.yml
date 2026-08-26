@@ -1,0 +1,33 @@
+generated: '2026-08-26'
+method: searched
+source: https://rhone.myshopify.com/llms.txt
+limit_count: 0
+note: >-
+  Rhone's own agent instructions state that the MCP endpoint is rate limited per IP and that agents
+  should back off on 429, but publish no number, window, burst or scope. No RateLimit-* or
+  Retry-After headers were present on a live 200 from the endpoint on 2026-08-26, so an agent has a
+  documented backoff rule and no runtime signal to act on before it is throttled. Honest zero.
+limits: []
+signals:
+  documented_policy: The MCP endpoint is rate-limited per IP. Back off on 429 responses.
+  policy_source: https://rhone.myshopify.com/llms.txt
+  exhaustion_status: 429
+  response_headers_observed: []
+  headers_checked:
+    - RateLimit-Limit
+    - RateLimit-Remaining
+    - RateLimit-Reset
+    - X-RateLimit-Limit
+    - X-RateLimit-Remaining
+    - Retry-After
+  observed_headers_of_note:
+    - x-shopify-ucp-mcp-api-version
+    - x-request-id
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 200
+      note: no rate-limit headers on the response
+    - url: https://rhone.myshopify.com/llms.txt
+      status: 200

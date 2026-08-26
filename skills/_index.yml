@@ -1,0 +1,25 @@
+generated: '2026-08-26'
+method: searched
+source: https://rhone.myshopify.com/agents.md
+note: >-
+  Rhone's store publishes its own agent instruction document at /agents.md (mirrored verbatim at
+  /llms.txt), saved here unmodified. The second entry is an API Evangelist-authored operating
+  skill grounded entirely in tool names and schema fields read from the live tools/list response.
+skills:
+  - name: rhone-apparel-agents
+    file: rhone-apparel-agents.md
+    method: searched
+    source: https://rhone.myshopify.com/agents.md
+    http_status: 200
+    description: >-
+      Rhone's provider-published agent instructions - the UCP discovery and MCP endpoints, the
+      typical agent flow, the read-only browsing surface, the buyer-approval rule, and the store
+      policy URLs.
+  - name: rhone-apparel-agent-commerce
+    file: rhone-apparel-agent-commerce.md
+    method: generated
+    source: mcp/rhone-apparel-mcp-tools.json
+    description: >-
+      Search catalog, build cart, drive checkout to human approval, complete with an idempotency
+      key, and reverse. Grounded in the 13 real MCP tool names and their inputSchemas.
+    operations: [search_catalog, lookup_catalog, get_product, create_cart, update_cart, get_cart, cancel_cart, create_checkout, update_checkout, get_checkout, complete_checkout, cancel_checkout, get_order]

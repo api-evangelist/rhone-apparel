@@ -1,0 +1,46 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/api/ucp/mcp
+format: jsonrpc
+note: >-
+  Rhone publishes no error reference. These entries were observed by making real calls against the
+  live UCP/MCP endpoint on 2026-08-26. The envelope is a JSON-RPC 2.0 error object carrying a
+  numeric code, a message, and a data block with a machine-readable data.code slug plus a
+  continue_url the agent can hand back to a human.
+envelope:
+  transport: JSON-RPC 2.0 over HTTP POST
+  fields:
+    - jsonrpc
+    - id
+    - error.code
+    - error.message
+    - error.data.code
+    - error.data.content
+    - error.data.continue_url
+  http_status_on_error: 422
+problems:
+  - jsonrpc_code: -32001
+    data_code: invalid_profile_url
+    http_status: 422
+    title: UCP discovery failed - missing agent profile URI
+    detail: "Unable to fetch agent profile: Missing profile uri"
+    remediation: >-
+      Supply params.meta['ucp-agent'].profile with a resolvable UCP agent profile URI on every
+      tools/call request. tools/list does not require it.
+    observed: '2026-08-26'
+  - jsonrpc_code: -32001
+    data_code: profile_unreachable
+    http_status: 422
+    title: UCP discovery failed - agent profile could not be fetched
+    detail: "Unable to fetch agent profile: Http error"
+    remediation: Host the agent profile at a publicly resolvable HTTPS URL before calling any tool.
+    observed: '2026-08-26'
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      request: tools/call search_catalog with no meta
+      status: 422
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      request: tools/call search_catalog with an unresolvable profile URI
+      status: 422

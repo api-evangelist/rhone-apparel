@@ -1,0 +1,50 @@
+generated: '2026-08-26'
+method: probed
+source: https://account.rhone.com/.well-known/openid-configuration
+docs: https://shopify.dev/docs/api/customer
+note: >-
+  Rhone has no first-party developer program. Two authentication models are observable on
+  Rhone-controlled hosts, both provided by the Shopify platform under Rhone's own domains.
+schemes:
+  - id: ucp-mcp-agent-profile
+    type: agentProfile
+    surface: https://rhone.myshopify.com/api/ucp/mcp
+    in: body
+    location: params.meta['ucp-agent'].profile
+    description: >-
+      The UCP/MCP endpoint accepts tools/list anonymously. tools/call requires a resolvable UCP
+      agent profile URI supplied in the request meta block; the server fetches it and rejects the
+      call with JSON-RPC -32001 / data.code invalid_profile_url (HTTP 422) when it is missing, and
+      profile_unreachable when it cannot be fetched. This is agent identity, not a bearer secret -
+      no API key is issued to the caller.
+    anonymous_read: true
+    evidence: probed 2026-08-26 - POST tools/list 200, POST tools/call without profile 422
+  - id: shopify-customer-account-oidc
+    type: openIdConnect
+    openIdConnectUrl: https://account.rhone.com/.well-known/openid-configuration
+    issuer: https://shopify.com/authentication/2497784
+    authorization_endpoint: https://account.rhone.com/authentication/oauth/authorize
+    token_endpoint: https://account.rhone.com/authentication/oauth/token
+    end_session_endpoint: https://account.rhone.com/authentication/logout
+    jwks_uri: https://account.rhone.com/.well-known/jwks.json
+    grant_types: [authorization_code, refresh_token, 'urn:ietf:params:oauth:grant-type:jwt-bearer']
+    response_types: [code]
+    pkce: [S256]
+    token_endpoint_auth_methods: [client_secret_basic, client_secret_post]
+    id_token_signing_alg: [RS256]
+    bearer_methods_supported: [header]
+    protected_resource: https://account.rhone.com
+    description: >-
+      Shopify Customer Accounts OIDC, branded on account.rhone.com. Gates the Customer Account API
+      and the Customer Account MCP API for a signed-in Rhone shopper.
+    evidence: probed 2026-08-26 - openid-configuration, oauth-authorization-server and oauth-protected-resource all 200
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://account.rhone.com/.well-known/openid-configuration
+      status: 200
+    - url: https://account.rhone.com/.well-known/oauth-protected-resource
+      status: 200
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 422
+      note: tools/call without an agent profile

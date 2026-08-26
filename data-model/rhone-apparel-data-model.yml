@@ -1,0 +1,73 @@
+generated: '2026-08-26'
+method: derived
+source: mcp/rhone-apparel-mcp-tools.json
+note: >-
+  Entity graph derived from the JSON Schema inputSchemas of the 13 live UCP/MCP tools. No OpenAPI
+  exists for this provider, so the MCP tool contract is the machine-readable source. Only entities
+  and relationships that appear in those schemas are recorded.
+identifier_scheme:
+  format: "gid://shopify/<Type>/<id>"
+  types_seen: [Checkout, Cart, Order, Product, ProductVariant]
+entities:
+  - name: Product
+    tools: [search_catalog, lookup_catalog, get_product]
+    description: A garment in Rhone's catalog, addressable by identifier or found by query/filters.
+    relationships:
+      - has_many: ProductVariant
+        via: variants
+  - name: ProductVariant
+    tools: [lookup_catalog, get_product]
+    description: A purchasable size/colour of a product; the unit added to a cart line item.
+    relationships:
+      - belongs_to: Product
+  - name: Cart
+    tools: [get_cart, create_cart, update_cart, cancel_cart]
+    description: A mutable collection of line items before checkout.
+    relationships:
+      - has_many: LineItem
+        via: line_items
+  - name: LineItem
+    tools: [create_cart, update_cart, create_checkout, update_checkout]
+    description: A quantity of a product variant inside a cart or checkout.
+    relationships:
+      - belongs_to: Cart
+      - belongs_to: Checkout
+      - has_one: ProductVariant
+  - name: Checkout
+    tools: [get_checkout, create_checkout, update_checkout, complete_checkout, cancel_checkout]
+    description: >-
+      The purchase transaction - line items, totals, taxes, discounts, fulfillment and payment
+      instruments. complete_checkout requires an idempotency key.
+    relationships:
+      - has_many: LineItem
+      - has_one: PaymentInstrument
+        via: payment.instruments
+      - has_one: Address
+        via: billing_address
+      - becomes: Order
+  - name: PaymentInstrument
+    tools: [create_checkout, update_checkout]
+    description: A tokenized payment method (card, Apple Pay token, Google Pay) supplied to a checkout.
+    relationships:
+      - belongs_to: Checkout
+      - has_one: Address
+        via: billing_address
+  - name: Address
+    tools: [create_checkout, update_checkout]
+    fields: [street_address, extended_address, address_locality, address_region, postal_code, address_country, first_name]
+  - name: Order
+    tools: [get_order]
+    description: A completed purchase, read-only over the agent surface.
+    relationships:
+      - belongs_to: Checkout
+value_objects:
+  - name: Money
+    shape: '{ amount: <integer minor units>, currency: <ISO 4217> }'
+  - name: BuyerContext
+    fields: [address_country, address_region, postal_code, language, currency]
+  - name: Pagination
+    fields: [cursor, limit]
+x-evidence:
+  fetched: '2026-08-26'
+  url: https://rhone.myshopify.com/api/ucp/mcp
+  http_status: 200

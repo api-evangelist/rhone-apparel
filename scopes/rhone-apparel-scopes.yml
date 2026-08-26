@@ -1,0 +1,22 @@
+generated: '2026-08-26'
+method: probed
+source: https://account.rhone.com/.well-known/openid-configuration
+note: >-
+  Scopes read verbatim from scopes_supported in the OIDC discovery document served on Rhone's
+  customer-account host. Descriptions are the platform meaning of each scope; Rhone publishes no
+  scope reference of its own.
+authorization_server: https://shopify.com/authentication/2497784
+scope_count: 4
+scopes:
+  - name: openid
+    description: Standard OIDC scope - issues an ID token identifying the signed-in Rhone customer.
+  - name: email
+    description: Releases the customer's email and email_verified claims.
+  - name: 'customer-account-api:full'
+    description: Full access to the Shopify Customer Account API for the signed-in Rhone customer (orders, addresses, profile).
+  - name: 'customer-account-mcp-api:full'
+    description: Full access to the Customer Account MCP API - the authenticated, customer-scoped agent surface alongside the anonymous storefront UCP/MCP endpoint.
+x-evidence:
+  fetched: '2026-08-26'
+  url: https://account.rhone.com/.well-known/openid-configuration
+  http_status: 200

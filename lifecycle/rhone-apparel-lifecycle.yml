@@ -1,0 +1,42 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/.well-known/ucp
+note: >-
+  Rhone publishes no API versioning policy, no deprecation policy and no status page of its own.
+  What is observable is the UCP protocol version the store negotiates, which is date-based and
+  advertises the previous version alongside the current one.
+versioning:
+  scheme: date-based (UCP protocol version)
+  current: '2026-04-08'
+  also_supported: ['2026-01-23']
+  negotiation: >-
+    /.well-known/ucp lists supported_versions with a per-version discovery URL; the live MCP
+    endpoint echoes the served version in the x-shopify-ucp-mcp-api-version response header.
+  response_header: x-shopify-ucp-mcp-api-version
+  evidence: probed 2026-08-26
+deprecation_policy:
+  published: false
+  sunset_header: not observed
+  deprecation_header: not observed
+  note: >-
+    No RFC 8594 Sunset/Deprecation headers observed on the MCP endpoint. The only deprecation
+    signal is that a superseded UCP version (2026-01-23) is still listed as supported.
+status_page:
+  published: false
+  note: >-
+    Rhone operates no status page. The underlying platform status is Shopify's
+    (https://www.shopifystatus.com), which is not a Rhone-published surface, so no StatusPage
+    pointer is emitted.
+sla:
+  published: false
+changelog:
+  published: false
+  note: No dated API changelog. Protocol change is expressed only as the UCP version list.
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/.well-known/ucp
+      status: 200
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 200
+      note: response carried x-shopify-ucp-mcp-api-version 2026-04-08

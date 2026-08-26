@@ -1,0 +1,65 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/.well-known/ucp + https://account.rhone.com/.well-known/openid-configuration
+note: >-
+  Derived from documents Rhone's own hosts serve. No compliance certifications (SOC 2, ISO 27001,
+  PCI DSS attestation, HIPAA, FedRAMP) are published by Rhone; the storefront inherits Shopify's
+  posture and Rhone makes no first-party claim, so no Compliance pointer is emitted.
+standards:
+  - id: oauth2
+    conforms: true
+    evidence: RFC 8414 authorization-server metadata served at https://account.rhone.com/.well-known/oauth-authorization-server (200)
+  - id: oidc
+    conforms: true
+    evidence: OIDC discovery served at https://account.rhone.com/.well-known/openid-configuration (200); issuer https://shopify.com/authentication/2497784
+  - id: rfc9728-protected-resource-metadata
+    conforms: true
+    evidence: https://account.rhone.com/.well-known/oauth-protected-resource returns resource + authorization_servers + bearer_methods_supported
+  - id: rfc7636-pkce
+    conforms: true
+    evidence: code_challenge_methods_supported [S256] in the OIDC discovery document
+  - id: mcp
+    conforms: true
+    evidence: JSON-RPC 2.0 tools/list at https://rhone.myshopify.com/api/ucp/mcp returned 13 tools with draft 2020-12 inputSchemas
+  - id: json-schema-2020-12
+    conforms: true
+    evidence: every MCP tool inputSchema declares $schema https://json-schema.org/draft/2020-12/schema
+  - id: llmstxt
+    conforms: true
+    evidence: https://rhone.myshopify.com/llms.txt returns a store-specific agent instruction document (200)
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: MCP errors use the JSON-RPC error envelope, not application/problem+json
+  - id: openapi
+    conforms: false
+    evidence: no OpenAPI found on any Rhone host; the UCP service schema is an OpenRPC document published by ucp.dev, not by Rhone
+domain_standards:
+  - id: ucp
+    name: Universal Commerce Protocol
+    conforms: true
+    version: '2026-04-08'
+    also_supported: ['2026-01-23']
+    declared_at: https://rhone.myshopify.com/.well-known/ucp
+    evidence: >-
+      The merchant profile declares service dev.ucp.shopping (transport mcp) and capabilities
+      dev.ucp.shopping.checkout, .cart, .order, .fulfillment, .discount, .catalog.search,
+      .catalog.lookup, plus the dev.shopify.catalog extension. Response header
+      x-shopify-ucp-mcp-api-version: 2026-04-08 on the live endpoint.
+    market: retail / direct-to-consumer commerce
+    note: >-
+      This is the agent-commerce domain standard for retail. Rhone speaks it, so a shopping agent
+      that already speaks UCP transacts with Rhone with no bespoke connector.
+  - id: shop-skill
+    name: Shopify Shop skill (agent shopping skill)
+    conforms: true
+    declared_at: https://rhone.myshopify.com/llms.txt
+    evidence: llms.txt and robots.txt both direct personal-shopping agents to https://shop.app/SKILL.md as the sanctioned buy-for-me path.
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/.well-known/ucp
+      status: 200
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 200
+    - url: https://account.rhone.com/.well-known/oauth-protected-resource
+      status: 200

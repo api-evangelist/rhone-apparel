@@ -1,0 +1,29 @@
+generated: '2026-08-26'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.rhone.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 31 22:28:53 2026 GMT
+  hsts: true
+  hsts_max_age: 2592000
+- host: rhone.myshopify.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct  6 15:01:35 2026 GMT
+  hsts: true
+  hsts_max_age: 7889238
+domains:
+- domain: rhone.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: reject
+- domain: myshopify.com
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: reject

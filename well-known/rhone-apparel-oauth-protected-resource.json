@@ -1,0 +1,10 @@
+{
+    "resource": "https://account.rhone.com",
+    "authorization_servers": [
+        "https://account.rhone.com",
+        "https://shopify.com/authentication/2497784"
+    ],
+    "bearer_methods_supported": [
+        "header"
+    ]
+}

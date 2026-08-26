@@ -1,0 +1,90 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/.well-known/ + https://account.rhone.com/.well-known/
+note: >-
+  Rhone's storefront and customer-account hosts serve a real /.well-known/ surface. The Shopify
+  shop host (rhone.myshopify.com) answers /.well-known/ucp with the store's UCP merchant profile,
+  and the Rhone-branded customer-account host (account.rhone.com) answers OIDC and RFC 8414 /
+  RFC 9728 discovery for shop 2497784. The public brand hosts (www.rhone.com, checkout.rhone.com)
+  are behind a Cloudflare managed challenge (cf-mitigated: challenge) and returned 403 to every
+  probe, including the very /.well-known/ucp path Rhone's own robots.txt and llms.txt advertise.
+  Documents are platform-provided by Shopify but are scoped to and served from Rhone-controlled
+  hosts, so they describe this merchant, not Shopify generally.
+hit_count: 5
+hosts:
+  - host: https://rhone.myshopify.com
+    documents:
+      - path: /.well-known/ucp
+        status: 200
+        file: rhone-apparel-ucp.json
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: rhone-apparel-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: rhone-apparel-oauth-authorization-server.json
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://account.rhone.com
+    documents:
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: rhone-apparel-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: rhone-apparel-oauth-authorization-server.json
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        file: rhone-apparel-oauth-protected-resource.json
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/ucp
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://checkout.rhone.com
+    note: Cloudflare managed challenge - every path returned 403 (cf-mitigated challenge), not a 404.
+    documents:
+      - path: /.well-known/ucp
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+  - host: https://www.rhone.com
+    note: Cloudflare managed challenge - 403 on every path including /robots.txt and /llms.txt.
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/.well-known/ucp
+      status: 200
+      content_type: application/json
+    - url: https://account.rhone.com/.well-known/oauth-protected-resource
+      status: 200
+      content_type: application/json
+    - url: https://checkout.rhone.com/.well-known/ucp
+      status: 403
+      content_type: text/html

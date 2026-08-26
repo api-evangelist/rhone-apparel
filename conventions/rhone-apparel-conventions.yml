@@ -1,0 +1,131 @@
+generated: '2026-08-26'
+method: probed
+source: https://rhone.myshopify.com/api/ucp/mcp (tools/list) + https://rhone.myshopify.com/llms.txt
+note: >-
+  Cross-cutting runtime semantics of Rhone's agent surface, read from the live MCP tool schemas and
+  Rhone's own agent instructions. There is no OpenAPI to derive from; every statement below was
+  observed in a real response on 2026-08-26.
+auth:
+  style: agent-profile (anonymous read) + OIDC for customer-scoped access
+  detail: >-
+    tools/list is anonymous. Every tools/call requires params.meta['ucp-agent'].profile, a
+    resolvable UCP agent profile URI. Customer-scoped access uses Shopify Customer Accounts OIDC on
+    account.rhone.com.
+  see: authentication/rhone-apparel-authentication.yml
+idempotency:
+  supported: true
+  mechanism: request-body metadata key
+  field: "meta['idempotency-key']"
+  scope: complete_checkout
+  required: true
+  retention: not published
+  evidence: >-
+    The complete_checkout inputSchema declares meta.properties['idempotency-key'] (string,
+    "An idempotency key for completing the checkout") and lists it in meta.required alongside
+    ucp-agent. It is the only tool that requires one, which is correct - it is the only tool that
+    moves money.
+  gap: >-
+    No retention window is published, so an agent cannot know how long a replayed key stays valid.
+pagination:
+  style: cursor
+  request_params:
+    - catalog.pagination.cursor
+    - catalog.pagination.limit
+  default_limit: 10
+  minimum_limit: 1
+  response_field: pagination.cursor
+  applies_to: [search_catalog]
+  evidence: search_catalog inputSchema + tool description ("Use the pagination.cursor from the response to fetch additional pages")
+money:
+  representation: integer minor units paired with an ISO 4217 currency code
+  example: '{"amount": 2500, "currency": "USD"} is $25.00'
+  agent_rule: >-
+    Convert to major units before quoting a price to a buyer - divide by 100 for two-decimal
+    currencies, treat zero-decimal currencies such as JPY as whole units.
+  evidence: stated in the description of every price-returning tool
+identifiers:
+  style: Shopify global IDs
+  format: "gid://shopify/<Type>/<id>"
+  examples:
+    - "gid://shopify/Checkout/abc123"
+    - "gid://shopify/Cart/abc123"
+    - "gid://shopify/Order/123"
+buyer_context:
+  fields: [address_country, address_region, postal_code, language, currency]
+  rule: Pass context.address_country and context.currency for accurate pricing and availability.
+  source: https://rhone.myshopify.com/llms.txt
+versioning:
+  scheme: date-based UCP protocol version
+  current: '2026-04-08'
+  response_header: x-shopify-ucp-mcp-api-version
+  see: lifecycle/rhone-apparel-lifecycle.yml
+error_envelope:
+  shape: JSON-RPC 2.0 error object with a data.code slug and a continue_url
+  http_status: 422
+  see: errors/rhone-apparel-problem-types.yml
+rate_limit_signal:
+  documented: true
+  runtime_headers: none observed
+  exhaustion_status: 429
+  see: rate-limits/rhone-apparel-rate-limits.yml
+request_tracing:
+  header: x-request-id
+  evidence: observed on a 200 from the MCP endpoint
+dry_run_mode:
+  supported: false
+  note: >-
+    No preview, simulate or dry_run parameter on any of the 13 tools. An agent rehearses a purchase
+    only by building a cart and a checkout and then cancelling them.
+human_in_the_loop:
+  required: true
+  rule: >-
+    Rhone's robots.txt and llms.txt both state that checkout, payment and order placement must not
+    be completed without explicit, contemporaneous human approval, and direct agents to the UCP/MCP
+    endpoints or the Shop skill, both of which require buyer approval before payment.
+  source: https://rhone.myshopify.com/robots.txt
+reversibility:
+  grade: verified
+  summary: >-
+    Every write surface Rhone exposes to an agent has a named reversal, and the money-moving one has
+    a window Rhone states in its own published policy.
+  surfaces:
+    - write_operation: create_cart / update_cart
+      reversal: cancel_cart
+      operation_id: cancel_cart
+      window: any time before the cart is converted to a completed checkout
+      window_stated_by_provider: false
+      note: The window is implied by the cart lifecycle; Rhone does not state it in prose.
+    - write_operation: create_checkout / update_checkout
+      reversal: cancel_checkout
+      operation_id: cancel_checkout
+      window: before complete_checkout is called (before capture)
+      window_stated_by_provider: false
+      note: >-
+        cancel_checkout exists as a first-class tool. Rhone states no explicit deadline, but the
+        reversal is unavailable once complete_checkout succeeds.
+    - write_operation: complete_checkout (payment)
+      reversal: return / refund via Rhone's published refund policy
+      operation_id: null
+      window: 45 days from purchase
+      window_stated_by_provider: true
+      docs: https://rhone.myshopify.com/policies/refund-policy
+      quote: >-
+        "We're happy to accept returns on unworn items in their original condition (unworn,
+        non-final sale, with all original tags attached) within 45 days of purchase."
+      conditions:
+        - item must be unworn and non-final-sale with original tags
+        - shoes, undergarments and accessories must be in original unopened packaging
+        - original shipping charge is non-refundable
+      note: >-
+        The refund path is a human/customer-service path, not an agent-callable tool - there is no
+        refund or return tool in the MCP surface. An agent can commit a purchase but cannot undo it
+        programmatically.
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+    - url: https://rhone.myshopify.com/api/ucp/mcp
+      status: 200
+    - url: https://rhone.myshopify.com/policies/refund-policy
+      status: 200
+    - url: https://rhone.myshopify.com/robots.txt
+      status: 200
