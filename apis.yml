@@ -11,6 +11,17 @@ description: >-
   checkout and order tools with full JSON Schema inputSchemas, and Shopify Customer Accounts OIDC
   discovery branded on account.rhone.com. The company is profiled here as an agent-commerce
   participant rather than an API producer.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://rhone.myshopify.com/cdn/shop/files/Discount_auto_applied_1200x.png?v=1733928390
 url: https://raw.githubusercontent.com/api-evangelist/rhone-apparel/refs/heads/main/apis.yml
 x-type: company
