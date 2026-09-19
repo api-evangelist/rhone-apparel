@@ -50,6 +50,17 @@ tags:
 - Retail
 - E-Commerce
 - Direct to Consumer
+- Agentic Commerce
+- Universal Commerce Protocol
+- MCP
+- Shopify
+- Activewear
+- Company
+tags_raw:
+- Apparel
+- Retail
+- E-Commerce
+- Direct to Consumer
 - Agent Commerce
 - Universal Commerce Protocol
 - MCP
@@ -70,6 +81,13 @@ apis:
   humanURL: https://rhone.myshopify.com/llms.txt
   baseURL: https://rhone.myshopify.com/api/ucp/mcp
   tags:
+  - Commerce
+  - Agentic Commerce
+  - MCP
+  - Universal Commerce Protocol
+  - Catalog
+  - Checkout
+  tags_raw:
   - Commerce
   - Agent Commerce
   - MCP
