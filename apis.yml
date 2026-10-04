@@ -113,6 +113,9 @@ apis:
     url: data-model/rhone-apparel-data-model.yml
   - type: Lifecycle
     url: lifecycle/rhone-apparel-lifecycle.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
